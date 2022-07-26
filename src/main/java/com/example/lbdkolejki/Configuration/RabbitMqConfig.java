@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Configuration;
 
 
 @Configuration
-public class RabbitMqTopicConfig {
+public class RabbitMqConfig {
     @Bean
     Queue articleQueue(){
         return new Queue("articleQueue",false);
