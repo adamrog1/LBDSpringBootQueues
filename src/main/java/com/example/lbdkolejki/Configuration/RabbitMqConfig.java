@@ -1,13 +1,25 @@
 package com.example.lbdkolejki.Configuration;
 
+import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
+import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.core.*;
+import org.springframework.amqp.rabbit.listener.MessageListenerContainer;
+import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import static org.springframework.integration.dsl.MessageChannels.queue;
 
 
 @Configuration
 public class RabbitMqConfig {
+
+    @Value("${spring.rabbitmq.username}")
+    String username;
+
+    @Value("${spring.rabbitmq.password}")
+    private String password;
     @Bean
     Queue articleQueue(){
         return new Queue("articleQueue",false);
@@ -77,5 +89,22 @@ public class RabbitMqConfig {
     Binding marketingBinding(Queue userQueue, DirectExchange exchange) {
         return BindingBuilder.bind(userQueue).to(exchange).with("user");
     }
+
+	@Bean
+	MessageListenerContainer messageListenerContainer() {
+		SimpleMessageListenerContainer simpleMessageListenerContainer = new SimpleMessageListenerContainer();
+		simpleMessageListenerContainer.setQueues(userQueue());
+        simpleMessageListenerContainer.setConnectionFactory(connectionFactory());
+		simpleMessageListenerContainer.setMessageListener(new RabbitMQListener());
+		return simpleMessageListenerContainer;
+	}
+
+    @Bean
+	ConnectionFactory connectionFactory() {
+		CachingConnectionFactory cachingConnectionFactory = new CachingConnectionFactory("localhost");
+		cachingConnectionFactory.setUsername(username);
+		cachingConnectionFactory.setUsername(password);
+		return cachingConnectionFactory;
+	}
 
 }
