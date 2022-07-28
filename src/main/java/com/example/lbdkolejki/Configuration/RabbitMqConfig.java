@@ -24,70 +24,47 @@ public class RabbitMqConfig {
     Queue articleQueue(){
         return new Queue("articleQueue",false);
     }
-
-    @Bean
-    TopicExchange articleExchange() {
-        return new TopicExchange("article-exchange");
-    }
-
-    @Bean
-    Binding articleBinding(Queue articleQueue, TopicExchange articleExchange) {
-        return BindingBuilder.bind(articleQueue).to(articleExchange).with("queue.article");
-    }
-
     @Bean
     Queue commentQueue(){
         return new Queue("commentQueue",false);
     }
-
-    @Bean
-    TopicExchange commentExchange() {
-        return new TopicExchange("comment-exchange");
-    }
-
-    @Bean
-    Binding commentBinding(Queue commentQueue, TopicExchange commentExchange) {
-        return BindingBuilder.bind(commentQueue).to(commentExchange).with("queue.comment");
-    }
-
     @Bean
     Queue userQueue(){
         return new Queue("userQueue",false);
     }
-
     @Bean
-    TopicExchange userExchange() {
-        return new TopicExchange("user-exchange");
+    TopicExchange topicExchange() {
+        return new TopicExchange("topic-exchange");
     }
-
     @Bean
-    Binding userBinding(Queue userQueue, TopicExchange userExchange) {
-        return BindingBuilder.bind(userQueue).to(userExchange).with("queue.user");
+    Binding articleBinding(Queue articleQueue, TopicExchange topicExchange) {
+        return BindingBuilder.bind(articleQueue).to(topicExchange).with("queue.article");
     }
-
+    @Bean
+    Binding commentBinding(Queue commentQueue, TopicExchange topicExchange) {
+        return BindingBuilder.bind(commentQueue).to(topicExchange).with("queue.comment");
+    }
+    @Bean
+    Binding userBinding(Queue userQueue, TopicExchange topicExchange) {
+        return BindingBuilder.bind(userQueue).to(topicExchange).with("queue.user");
+    }
     @Bean
     Queue allQueue(){
         return new Queue("allQueue",false);
     }
 
     @Bean
-    TopicExchange allExchange() {
-        return new TopicExchange("all-exchange");
+    Binding allBinding(Queue allQueue, TopicExchange topicExchange) {
+        return BindingBuilder.bind(allQueue).to(topicExchange).with("queue.*");
     }
-
     @Bean
-    Binding allBinding(Queue allQueue, TopicExchange userExchange) {
-        return BindingBuilder.bind(allQueue).to(userExchange).with("queue.*");
-    }
-
-    @Bean
-    DirectExchange exchange() {
+    DirectExchange directExchange() {
         return new DirectExchange("direct-exchange");
     }
 
     @Bean
-    Binding marketingBinding(Queue userQueue, DirectExchange exchange) {
-        return BindingBuilder.bind(userQueue).to(exchange).with("user");
+    Binding marketingBinding(Queue userQueue, DirectExchange directExchange) {
+        return BindingBuilder.bind(userQueue).to(directExchange).with("user");
     }
 
 	@Bean
